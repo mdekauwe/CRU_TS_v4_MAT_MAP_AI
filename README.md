@@ -20,7 +20,7 @@ Note that the following reference only partly applies to v4.00 (please read the 
 
 ## Reference
 
-* Harris et al. (2014) http://onlinelibrary.wiley.com/doi/10.1002/joc.3711/abstract. C
+* Harris et al. (2014) http://onlinelibrary.wiley.com/doi/10.1002/joc.3711/abstract. 
 
 ## Contacts
 
