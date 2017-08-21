@@ -35,12 +35,12 @@ def main(fdir):
 
         f = Dataset(fname, 'r')
         time = len(f.dimensions['time'])
-
         temp = f.variables["pre"][:,:,:]
 
-        # average months to get annual data
+        # sum months to get annual data
         temp = temp.reshape(10, 12, nrows, ncols).sum(axis=1)
 
+        # store it
         data[i,:,:,:] = temp
 
         i += 1

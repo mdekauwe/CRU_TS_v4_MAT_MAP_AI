@@ -45,12 +45,10 @@ def main(fdir1, fdir2):
         # sum months to get annual data
         ppt = temp.reshape(10, 12, nrows, ncols).sum(axis=1)
 
-
+        # Now get the matching PET file
         fn = os.path.join(fdir2, os.path.basename(fname).replace("pre", "pet"))
-
         f = Dataset(fn, 'r')
         time = len(f.dimensions['time'])
-
         temp = f.variables["pet"][:,:,:]
 
         # sum months to get annual data
@@ -64,6 +62,7 @@ def main(fdir1, fdir2):
             else:
                 pet[j,:,:] *= 365.
 
+        # store it
         data[i,:,:,:] = ppt
         data2[i,:,:,:] = pet
 
