@@ -1,6 +1,6 @@
 # CRU_TS_v4_MAT_MAP_AI
 
-[Martin G. De Kauwe](https://mdekauwe.github.io/),
+[Martin G. De Kauwe](https://mdekauwe.github.io/)
 
 ## Overview
 
