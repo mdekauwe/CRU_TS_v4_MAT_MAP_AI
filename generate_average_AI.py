@@ -17,7 +17,7 @@ from netCDF4 import Dataset
 import os
 import glob
 import calendar
-
+from calendar import monthrange
 
 def main(fdir1, fdir2):
 
@@ -51,16 +51,16 @@ def main(fdir1, fdir2):
         time = len(f.dimensions['time'])
         temp = f.variables["pet"][:,:,:]
 
+        # Convert PET mm/day to mm/month, accounting for leap years
+        ncount = 0
+        for j,yr in enumerate(years):
+            for k in range(12):
+                (crap, ndays) = monthrange(yr, k+1)
+                temp[ncount,:,:] *= float(ndays)
+                ncount += 1
+
         # sum months to get annual data
         pet = temp.reshape(10, 12, nrows, ncols).sum(axis=1)
-
-        # Convert PET mm/day to mm/year, accounting for leap years
-        for j,yr in enumerate(years):
-
-            if calendar.isleap(yr):
-                pet[j,:,:] *= 366.
-            else:
-                pet[j,:,:] *= 365.
 
         # store it
         data[i,:,:,:] = ppt
@@ -75,7 +75,7 @@ def main(fdir1, fdir2):
     aridity_index = np.where(np.logical_and(data>0.0, data2>0.0), data / data2, 0.0)
     # make plot look sensible, exclude super high and 0
     data_plt = np.where(aridity_index==0.0, np.nan, aridity_index)
-    data_plt = np.where(data_plt>0.5, np.nan, data_plt)
+    data_plt = np.where(data_plt>5., np.nan, data_plt)
     plt.imshow(data_plt, origin='lower')
     plt.colorbar()
     plt.show()
