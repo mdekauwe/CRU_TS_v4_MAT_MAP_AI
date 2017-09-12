@@ -39,7 +39,7 @@ def main():
 
     fp  = open('sites_and_bioclimatic_stuff.csv', "w")
 
-    s = "%s,%s,%s,%s,%s,%s,%s" % ("site","lat","lon","elev","mat","map","ai")
+    s = "%s,%s,%s,%s,%s,%s,%s,%s" % ("site","lat","lon","elev","mat","map","ai","pet")
     print(s, end="\n", file=fp)
 
     nrows = 360
@@ -54,17 +54,25 @@ def main():
     mapx = np.fromfile("MAP_1960_2010.bin").reshape(nrows, ncols)
     matx = np.fromfile("MAT_1960_2010.bin").reshape(nrows, ncols)
     aix = np.fromfile("AI_1960_2010.bin").reshape(nrows, ncols)
+    petx = np.fromfile("PET_1960_2010.bin").reshape(nrows, ncols)
 
     for p in places:
+
         r = np.where(latitudes==lats_neededx[p])[0][0]
         c = np.where(longitudes==lons_neededx[p])[0][0]
+
+        # Cape Trib is in the sea at this resolution, so take the adjoining
+        # pixel
+        if p.strip() == "Cape Tribulation Crane":
+            c -= 1
+        #print(p.strip(), r, c, lats_neededr[p], lons_neededr[p], lats_neededx[p], lons_neededx[p])
         # get elevation
         e = requests.get('http://api.geonames.org/gtopo30JSON?lat=%f&lng=%f&username=mdekauwe' % (lats_neededr[p], lons_neededr[p]))
         elev = e.json()['gtopo30']
 
-        s = "%s,%s,%s,%s,%s,%s,%s" % (p.strip(), lats_neededr[p],
+        s = "%s,%s,%s,%s,%s,%s,%s,%s" % (p.strip(), lats_neededr[p],
                                       lons_neededr[p], elev, matx[r,c],
-                                      mapx[r,c], aix[r,c])
+                                      mapx[r,c], aix[r,c], petx[r,c])
         print(s, end="\n", file=fp)
 
     fp.close()
