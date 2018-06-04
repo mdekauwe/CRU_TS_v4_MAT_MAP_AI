@@ -1,19 +1,21 @@
 #!/bin/bash
 
 # combine all time slices into one file
+cdo mergetime raw_data/TMAX/cru_ts4.*.nc raw_data/TMAX/TMAX_1961_2010.nc
 
-cdo mergetime raw_data/TMP/cru_ts4.00*.nc raw_data/TMP/merged_TMP_1961_2010.nc
+# Make JJA climatology
+cdo -timmean -selmon,6,7,8 raw_data/TMAX/TMAX_1961_2010.nc raw_data/TMAX/jja.nc
 
-# Delete final year as it isn't complte and will mess up seasonal calcs
-cdo delete,year=2010 raw_data/TMP/merged_TMP_1961_2010.nc raw_data/TMP/merged_TMP_1961_2009.nc
-rm raw_data/TMP/merged_TMP_1961_2010.nc
+# Make DJF climatology
+cdo -timmean -selmon,10,11,12 -shifttime,-2mon raw_data/TMAX/TMAX_1961_2010.nc \
+        raw_data/TMAX/djf.nc
 
-# calculate monthly max across all years
+# Merge to get a new 2D field where max [jja.nc; djf.nc] is selected at each
+# grid cell, and add 10K
+cdo -addc,10 -ifthenelse -gec,0 -sub raw_data/TMAX/djf.nc raw_data/TMAX/jja.nc \
+        raw_data/TMAX/djf.nc raw_data/TMAX/jja.nc \
+        raw_data/TMAX/avg_summer_TMAX.nc
 
-cdo ymonmax raw_data/TMP/merged_TMP_1961_2009.nc raw_data/TMP/merged_TMAX_1961_2009.nc
-
-# calculate seasonal mean
-
-cdo seasmean raw_data/TMP/merged_TMAX_1961_2009.nc raw_data/TMP/merged_TMAX_seasmean_1961_2009.nc
-
-rm raw_data/TMP/merged_TMAX_1961_2009.nc raw_data/TMP/merged_TMP_1961_2009.nc
+rm raw_data/TMAX/TMAX_1961_2010.nc
+rm raw_data/TMAX/jja.nc
+rm raw_data/TMAX/djf.nc
